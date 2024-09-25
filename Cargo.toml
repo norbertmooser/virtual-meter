@@ -1,0 +1,14 @@
+[package]
+name = "virtual_meter"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "*", features = ["full"] }
+tokio-modbus = { version = "0.14.0", default-features = false, features = ["tcp-server"] }
+anyhow = "*"
+serde = { version = "*", features = ["derive"] }
+serde_yaml = "*"
+log = "*"
+env_logger = "*"
+chrono = "*"

@@ -1,0 +1,110 @@
+meter_data:
+  ip: "127.0.0.1"
+  port: 5020
+  meter_type: "Phoenix Generic"
+
+auth:
+  name: "admin"
+  register: 16403
+  pin: 100
+
+write_registers:
+  - name: power_factor_L1
+    address: 32816
+    value: 10
+    is_input: true
+  - name: power_factor_L2
+    address: 32818
+    value: 20
+    is_input: true
+  - name: power_factor_L3
+    address: 32820
+    value: 30
+    is_input: true
+
+read_registers:
+  - name: voltage_L1_N
+    address: 32774
+    value: 230
+    is_input: true
+  - name: voltage_L2_N
+    address: 32776
+    value: 231
+    is_input: true
+  - name: voltage_L3_N
+    address: 32778
+    value: 229
+    is_input: true
+  - name: current_L1_N
+    address: 32782
+    value: 15
+    is_input: true
+  - name: current_L2_N
+    address: 32784
+    value: 14
+    is_input: true
+  - name: current_L3_N
+    address: 32786
+    value: 16
+    is_input: true
+  - name: active_power_L1_N
+    address: 32798
+    value: 3450
+    is_input: true
+  - name: active_power_L2_N
+    address: 32800
+    value: 3400
+    is_input: true
+  - name: active_power_L3_N
+    address: 32802
+    value: 3500
+    is_input: true
+  - name: reactive_power_L1_N
+    address: 32804
+    value: 1200
+    is_input: true
+  - name: reactive_power_L2_N
+    address: 32806
+    value: 1150
+    is_input: true
+  - name: reactive_power_L3_N
+    address: 32808
+    value: 1180
+    is_input: true
+  - name: power_factor_L1
+    address: 32816
+    value: 10
+    is_input: true
+  - name: power_factor_L2
+    address: 32818
+    value: 20
+    is_input: true
+  - name: power_factor_L3
+    address: 32820
+    value: 30
+    is_input: true
+  - name: grid_frequency
+    address: 32780
+    value: 50
+    is_input: true
+  - name: total_current
+    address: 32825
+    value: 45
+    is_input: true
+  - name: total_active_power
+    address: 32790
+    value: 10350
+    is_input: true
+  - name: total_apparent_power
+    address: 32794
+    value: 12500
+    is_input: true
+  - name: total_reactive_power
+    address: 32792
+    value: 3530
+    is_input: true
+
+debug:
+  mgw_generic: "info"
+  statemachine_modbus: "info"
+  statemachine_read: "info"
