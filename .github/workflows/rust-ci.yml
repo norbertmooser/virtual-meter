@@ -58,13 +58,19 @@ jobs:
         DIR_PATH="/home/arcasys/virtual_meter_server"
     
         ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" bash -c "'
-        if [ ! -d \"$DIR_PATH\" ]; then
+        if [ -e \"$DIR_PATH\" ]; then
+            if [ -d \"$DIR_PATH\" ]; then
+                echo \"Directory already exists.\"
+            else
+                echo \"A file with the same name exists. Aborting.\"
+                exit 1
+            fi
+        else
             mkdir -p \"$DIR_PATH\"
             echo \"Directory created.\"
-        else
-            echo \"Directory already exists.\"
         fi
         '"
+      
       
     - name: Transfer binary via SFTP
       run: |
