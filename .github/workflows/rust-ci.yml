@@ -1,0 +1,62 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [ '*' ]
+  pull_request:
+    branches: [ '*' ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20'
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1.0.0
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Build
+      run: cargo build --release --verbose
+
+    # - name: Run tests
+    #   run: cargo test --verbose
+
+    # - name: List target directory
+    #   run: ls -R target/
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: virtual_meter_server
+        path: target/release/virtual_meter_server
+
+
+    - name: Set up SSH key
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.PK_BACHELOR }}
+      run: |
+        echo "The secret value is: $SSH_PRIVATE_KEY"
+        echo "$SSH_PRIVATE_KEY" > id_rsa
+        chmod 660 id_rsa
+
+    - name: Transfer binary via SFTP
+      run: |
+        USER="arcasys"
+        SERVER_IP="217.160.9.123"
+        PORT="47122"
+        BINARY_PATH="target/release/virtual_meter_server"
+
+        sftp -o StrictHostKeyChecking=no -i "id_rsa" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+        put "$BINARY_PATH" /virtual_meter_server
+        EOF
