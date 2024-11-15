@@ -52,6 +52,9 @@ jobs:
 
     - name: Create remote directory
       run: |
+        USER="arcasys"
+        SERVER_IP="217.160.9.123"
+        PORT="47122"
         ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" <<EOF
         mkdir /virtual_meter_server
         EOF 
