@@ -83,5 +83,5 @@ jobs:
         BINARY_PATH="target/release/virtual_meter_server"
 
         sftp -o StrictHostKeyChecking=no -i "id_rsa" -P "$PORT" "$USER@$SERVER_IP" <<EOF
-        put "$BINARY_PATH" /home/arcasys/virtual_meter_server
+        put "$BINARY_PATH" /home/arcasys/virtual_meter_server/virtual_meter_server
         EOF
