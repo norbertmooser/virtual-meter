@@ -20,27 +20,6 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1.0.0
-      with:
-        toolchain: stable
-        override: true
-
-    - name: Build
-      run: cargo build --release --verbose
-
-    # - name: Run tests
-    #   run: cargo test --verbose
-
-    # - name: List target directory
-    #   run: ls -R target/
-
-    - name: Upload binary
-      uses: actions/upload-artifact@v3
-      with:
-        name: virtual_meter_server
-        path: target/release/virtual_meter_server
-
 
     - name: Set up SSH key
       env:
@@ -70,6 +49,30 @@ jobs:
             echo \"Directory created.\"
         fi
         '"
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1.0.0
+      with:
+        toolchain: stable
+        override: true
+
+    - name: Build
+      run: cargo build --release --verbose
+
+    # - name: Run tests
+    #   run: cargo test --verbose
+
+    # - name: List target directory
+    #   run: ls -R target/
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: virtual_meter_server
+        path: target/release/virtual_meter_server
+        
+        
+   
       
       
     - name: Transfer binary via SFTP
