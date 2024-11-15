@@ -56,7 +56,7 @@ jobs:
         SERVER_IP="217.160.9.123"
         PORT="47122"
         ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" <<EOF
-        mkdir /home/arcasys/virtual_meter_server
+        mkdir -p /home/arcasys/virtual_meter_server
         EOF 
 
     - name: Transfer binary via SFTP
