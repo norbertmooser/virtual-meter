@@ -50,6 +50,12 @@ jobs:
         echo "$SSH_PRIVATE_KEY" > id_rsa
         chmod 600 id_rsa
 
+    - name: Create remote directory
+      run: |
+        ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" <<EOF
+        mkdir /virtual_meter_server
+        EOF 
+
     - name: Transfer binary via SFTP
       run: |
         USER="arcasys"
@@ -58,7 +64,5 @@ jobs:
         BINARY_PATH="target/release/virtual_meter_server"
 
         sftp -o StrictHostKeyChecking=no -i "id_rsa" -P "$PORT" "$USER@$SERVER_IP" <<EOF
-        mkdir /virtual_meter_server
-        # put "$BINARY_PATH" /virtual_meter_server
-        put "$BINARY_PATH" 
+        put "$BINARY_PATH" /virtual_meter_server
         EOF
