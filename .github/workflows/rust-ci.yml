@@ -22,7 +22,7 @@ jobs:
 
     - name: Set up SSH key
       env:
-        SSH_PRIVATE_KEY: ${{ secrets.PK_BACHELOR }}
+        SSH_PRIVATE_KEY: ${{ secrets.PK_BACHELOR_DEPLOY }}
       run: |
         echo "The secret value is: $SSH_PRIVATE_KEY"
         echo "$SSH_PRIVATE_KEY" > id_rsa
@@ -30,10 +30,10 @@ jobs:
 
     - name: Create remote directory
       run: |
-        USER="arcasys"
+        USER="deploy"
         SERVER_IP="217.160.9.123"
         PORT="47122"
-        DIR_PATH="/home/arcasys/virtual_meter_server"
+        DIR_PATH="/home/deploy/virtual_meter_server"
     
         ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" bash -c "'
         if [ -e \"$DIR_PATH\" ]; then
@@ -74,12 +74,12 @@ jobs:
 
     - name: Transfer binary and config via SFTP
       run: |
-        USER="arcasys"
+        USER="deploy"
         SERVER_IP="217.160.9.123"
         PORT="47122"
         BINARY_PATH="target/release/virtual_meter_server"
         CONFIG_PATH="config"
-        DEST_PATH="/home/arcasys/virtual_meter_server"
+        DEST_PATH="/home/deploy/virtual_meter_server"
 
         # Check if the binary and config directory exist before attempting to upload
         if [[ ! -f "$BINARY_PATH" ]]; then
