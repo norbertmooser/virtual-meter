@@ -97,7 +97,7 @@ jobs:
 
     - name: Debug Artifact location
       run: |
-        stat /target/release/virtual_meter_server  
+        stat target/release/virtual_meter_server  
 
 
 

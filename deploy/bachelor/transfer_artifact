@@ -17,10 +17,10 @@ echo "Config path: $CONFIG_PATH"
 echo "Destination path: $DEST_PATH"
 
 # Use SFTP to transfer files
-sftp -o StrictHostKeyChecking=no -i "key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+(cd && sftp -o StrictHostKeyChecking=no -i "key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
-EOF
+EOF)
 
 
 rm "key"
