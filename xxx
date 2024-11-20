@@ -1,0 +1,16 @@
+#!/bin/bash
+for dir in deploy/*/; do
+    if [ -f "$dir/key.zip" ]; then
+    echo "Unzipping key.zip in $dir"
+    unzip -P "241120" "$dir/key.zip" -d "$dir"
+    # Load the contents of id_rsa into an environment variable
+    export ID_RSA_CONTENT=$(cat "$dir/key")
+    echo "Loaded id_rsa contents into environment variable."
+    # Delete the key.zip file
+    rm "$dir/key"
+    echo $ID_RSA_CONTENT
+    echo "Deleted key in $dir"
+    else
+    echo "No key.zip found in $dir"
+    fi
+done

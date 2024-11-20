@@ -57,6 +57,12 @@ jobs:
         path: |
           deploy/**  # Include all files in the deploy directory
 
+
+    - name: Install yq yaml bash processor
+      run: |
+        wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+        chmod a+x /usr/local/bin/yq
+
     - name: Loop through deploy directory and unzip
       run: |
         for dir in deploy/*/; do
@@ -67,8 +73,8 @@ jobs:
             export ID_RSA_CONTENT=$(cat "$dir/key")
             echo "Loaded id_rsa contents into environment variable."
             # Delete the key.zip file
-            rm "$dir/key.zip"
-            echo "Deleted key.zip in $dir"
+            rm "$dir/key"
+            echo "Deleted key in $dir"
           else
             echo "No key.zip found in $dir"
           fi
