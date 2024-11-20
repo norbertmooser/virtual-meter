@@ -66,6 +66,17 @@ jobs:
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         chmod a+x /usr/local/bin/yq
 
+    - name: Loop through deploy directory check every target directory
+      run: |
+        for dir in deploy/*/; do
+          (cd $dir && chmod +x check_target_dir && ./check_target_dir)
+        done
+
+    - name: Exit workflow
+      run: exit 1
+
+
+        
     - name: Loop through deploy directory and unzip
       run: |
         for dir in deploy/*/; do
@@ -84,10 +95,6 @@ jobs:
         done
 
 
-
-
-    - name: Exit workflow
-      run: exit 1
 
     - name: Set up Rust
       uses: actions-rs/toolchain@v1.0.0
