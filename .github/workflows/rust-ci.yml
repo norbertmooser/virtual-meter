@@ -94,7 +94,15 @@ jobs:
         path: |
           target/release/virtual_meter_server
           config/**  # Include all files in the config directory
-          deploy/**  # Include all files in the deploy directory
+
+    - name: Debug Artifact location
+      run: |
+        stat target/release/virtual_meter_server  
+
+
+
+
+
 
     - name: Transfer binary and config via SFTP
       run: |
