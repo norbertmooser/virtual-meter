@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Variables
+USER="deploy"
+SERVER_IP="217.160.9.123"
+PORT="47122"
+SSH_KEY_PATH="./key"
+
+# Check if the SSH key exists
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    echo "Error: SSH key not found at $SSH_KEY_PATH"
+    exit 1
+fi
+
+# SSH into the server
+ssh -o StrictHostKeyChecking=no -i "$SSH_KEY_PATH" -p "$PORT" "$USER@$SERVER_IP"
+

@@ -72,6 +72,7 @@ jobs:
         path: |
           target/release/virtual_meter_server
           config/**  # Include all files in the config directory
+          deploy/**  # Include all files in the deploy directory
 
     - name: Transfer binary and config via SFTP
       run: |
@@ -80,6 +81,7 @@ jobs:
         PORT="47122"
         BINARY_PATH="target/release/virtual_meter_server"
         CONFIG_PATH="config"
+        DEPLOY_PATH="deploy"
         DEST_PATH="/home/deploy/virtual_meter_server"
 
         # Check if the binary and config directory exist before attempting to upload
@@ -92,11 +94,17 @@ jobs:
           echo "Error: Config directory does not exist at $CONFIG_PATH"
           exit 1
         fi
+        
+        if [[ ! -d "$DEPLOY_PATH" ]]; then
+          echo "Error: Deploy directory does not exist at $CONFIG_PATH"
+          exit 1
+        fi
 
         # Use SFTP to transfer files
         sftp -o StrictHostKeyChecking=no -i "id_rsa" -P "$PORT" "$USER@$SERVER_IP" <<EOF
         put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
-        put -r "$CONFIG_PATH" "$DEST_PATH/config"  # Upload the config directory recursively
+        put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
+        put -r "$DEPLOY_PATH" "$DEST_PATH/$DEPLOY_PATH"  # Upload the config directory recursively
         EOF
 
         echo "Transfer completed successfully."

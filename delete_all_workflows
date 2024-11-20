@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Check if the user is authenticated
+if ! gh auth status &>/dev/null; then
+  echo "You need to authenticate with GitHub CLI first."
+  exit 1
+fi
+
+# Get the list of workflow IDs
+workflows=$(gh run list --json databaseId -q '.[].databaseId')
+
+# Check if there are any workflows to delete
+if [ -z "$workflows" ]; then
+  echo "No workflows found in this repository."
+  exit 0
+fi
+
+# Loop through each workflow and delete it
+for workflow_id in $workflows; do
+  echo "Deleting workflow with ID: $workflow_id"
+  gh run delete "$workflow_id"
+done
