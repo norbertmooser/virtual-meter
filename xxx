@@ -1,16 +1,36 @@
 #!/bin/bash
 for dir in deploy/*/; do
     if [ -f "$dir/key.zip" ]; then
-    echo "Unzipping key.zip in $dir"
-    unzip -P "241120" "$dir/key.zip" -d "$dir"
-    # Load the contents of id_rsa into an environment variable
-    export ID_RSA_CONTENT=$(cat "$dir/key")
-    echo "Loaded id_rsa contents into environment variable."
-    # Delete the key.zip file
-    rm "$dir/key"
-    echo $ID_RSA_CONTENT
-    echo "Deleted key in $dir"
+        echo "Unzipping key.zip in $dir"
+        unzip -P "241120" "$dir/key.zip" -d "$dir"
     else
-    echo "No key.zip found in $dir"
+        echo "No key.zip found in $dir"
     fi
+
+    # Read values from the YAML file
+    HOSTNAME=$(yq '.general.hostname' $dir/info.yml)
+    USER=$(yq '.general.user' $dir/info.yml)
+    SERVER_IP=$(yq '.general.server_ip' $dir/info.yml)
+    PORT=$(yq '.general.port' $dir/info.yml)
+
+    # Read paths
+    BINARY_PATH=$(yq '.paths.binary_path' $dir/info.yml)
+    CONFIG_PATH=$(yq '.paths.config_path' $dir/info.yml)
+    DEST_PATH=$(yq '.paths.dest_path' $dir/info.yml)
+
+    # Example usage of the variables
+    echo "Connecting to $HOSTNAME at $SERVER_IP:$PORT as $USER"
+    echo "Binary path: $BINARY_PATH"
+    echo "Config path: $CONFIG_PATH"
+    echo "Destination path: $DEST_PATH"
+
+    # Use SFTP to transfer files
+    sftp -o StrictHostKeyChecking=no -i "$dir/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
+put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
+put -r "$DEPLOY_PATH" "$DEST_PATH/$DEPLOY_PATH"  # Upload the config directory recursively
+EOF
+    rm "$dir/key"
+
+
 done

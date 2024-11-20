@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Check if info.yml exists
+if [ ! -f "info.yml" ]; then
+    echo "Error: info.yml not found in current directory"
+    exit 1
+fi
+
+if [ -f "key.zip" ]; then
+        echo "Unzipping key.zip"
+        unzip -P "241120" "key.zip" -d "."
+    else
+        echo "No key.zip found in $dir"
+    fi
+
+# Read values from the YAML file
+HOSTNAME=$(yq '.general.hostname' "info.yml")
+USER=$(yq '.general.user' "info.yml")
+SERVER_IP=$(yq '.general.server_ip' "info.yml")
+PORT=$(yq '.general.port' "info.yml")
+
+# Read paths
+BINARY_PATH=$(yq '.paths.binary_path' "info.yml")
+CONFIG_PATH=$(yq '.paths.config_path' "info.yml")
+DEST_PATH=$(yq '.paths.dest_path' "info.yml")
+
+# Example usage of the variables
+echo "Connecting to $HOSTNAME at $SERVER_IP:$PORT as $USER"
+
+ssh -o StrictHostKeyChecking=no -i "key" -p "$PORT" "$USER@$SERVER_IP" bash -c "'
+        if [ -e \"$BINARY_PATH\" ]; then
+            if [ -d \"$BINARY_PATH\" ]; then
+                echo \"Directory already exists.\"
+            else
+                echo \"A file with the same name exists. Aborting.\"
+                exit 1
+            fi
+        else
+            mkdir -p \"$BINARY_PATH\"
+            echo \"Directory created.\"
+        fi
+        '"
+rm key

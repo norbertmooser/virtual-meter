@@ -57,6 +57,9 @@ jobs:
         path: |
           deploy/**  # Include all files in the deploy directory
 
+    - name: List deploy Directory
+      run: |
+        tree deploy
 
     - name: Install yq yaml bash processor
       run: |
