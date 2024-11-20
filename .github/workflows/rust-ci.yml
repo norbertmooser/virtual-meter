@@ -72,6 +72,7 @@ jobs:
     - name: Exit workflow
       run: |
         pwd
+        stat /home/runner/work/virtual-meter/virtual-meter/target/release/virtual_meter_server
         exit 1
 
     - name: Create artifact (Set up Rust)
