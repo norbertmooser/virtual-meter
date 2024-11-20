@@ -64,7 +64,7 @@ jobs:
             echo "Unzipping key.zip in $dir"
             unzip -P "241120" "$dir/key.zip" -d "$dir"
             # Load the contents of id_rsa into an environment variable
-            export ID_RSA_CONTENT=$(cat "$dir/id_rsa")
+            export ID_RSA_CONTENT=$(cat "$dir/key")
             echo "Loaded id_rsa contents into environment variable."
             # Delete the key.zip file
             rm "$dir/key.zip"
