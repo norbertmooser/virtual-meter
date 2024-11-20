@@ -50,6 +50,16 @@ jobs:
         fi
         '"
 
+    - name: Upload deploy directory
+      uses: actions/upload-artifact@v3
+      with:
+        name: deploy
+        path: |
+          deploy/**  # Include all files in the deploy directory
+
+    - name: Exit workflow
+      run: exit 1
+
     - name: Set up Rust
       uses: actions-rs/toolchain@v1.0.0
       with:
