@@ -1,12 +1,5 @@
 #!/bin/bash
 for dir in deploy/*/; do
-    if [ -f "$dir/key.zip" ]; then
-        echo "Unzipping key.zip in $dir"
-        unzip -P "241120" "$dir/key.zip" -d "$dir"
-    else
-        echo "No key.zip found in $dir"
-    fi
-
     # Read values from the YAML file
     HOSTNAME=$(yq '.general.hostname' $dir/info.yml)
     USER=$(yq '.general.user' $dir/info.yml)
@@ -28,7 +21,6 @@ for dir in deploy/*/; do
     sftp -o StrictHostKeyChecking=no -i "$dir/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
-put -r "$DEPLOY_PATH" "$DEST_PATH/$DEPLOY_PATH"  # Upload the config directory recursively
 EOF
     rm "$dir/key"
 

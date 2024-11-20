@@ -8,7 +8,7 @@ fi
 
 if [ -f "key.zip" ]; then
         echo "Unzipping key.zip"
-        unzip -P "241120" "key.zip" -d "."
+        unzip -o -P "241120" "key.zip" -d "."
     else
         echo "No key.zip found in $dir"
     fi
@@ -40,4 +40,3 @@ ssh -o StrictHostKeyChecking=no -i "key" -p "$PORT" "$USER@$SERVER_IP" bash -c "
             echo \"Directory created.\"
         fi
         '"
-rm key

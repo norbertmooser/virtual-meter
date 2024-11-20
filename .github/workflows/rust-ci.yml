@@ -57,52 +57,28 @@ jobs:
         path: |
           deploy/**  # Include all files in the deploy directory
 
-    - name: List deploy Directory
-      run: |
-        tree deploy
-
     - name: Install yq yaml bash processor
       run: |
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         chmod a+x /usr/local/bin/yq
 
+    # Leaves the decrypted key in the deploy/*/ directory
     - name: Loop through deploy directory check every target directory
       run: |
         for dir in deploy/*/; do
           (cd $dir && chmod +x check_target_dir && ./check_target_dir)
         done
 
-    - name: Exit workflow
-      run: exit 1
+    # - name: Exit workflow
+    #   run: exit 1
 
-
-        
-    - name: Loop through deploy directory and unzip
-      run: |
-        for dir in deploy/*/; do
-          if [ -f "$dir/key.zip" ]; then
-            echo "Unzipping key.zip in $dir"
-            unzip -P "241120" "$dir/key.zip" -d "$dir"
-            # Load the contents of id_rsa into an environment variable
-            export ID_RSA_CONTENT=$(cat "$dir/key")
-            echo "Loaded id_rsa contents into environment variable."
-            # Delete the key.zip file
-            rm "$dir/key"
-            echo "Deleted key in $dir"
-          else
-            echo "No key.zip found in $dir"
-          fi
-        done
-
-
-
-    - name: Set up Rust
+    - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
       with:
         toolchain: stable
         override: true
 
-    - name: Build
+    - name: Create artifact (Build)
       run: cargo build --release --verbose
 
     # - name: Run tests
@@ -122,35 +98,7 @@ jobs:
 
     - name: Transfer binary and config via SFTP
       run: |
-        USER="deploy"
-        SERVER_IP="217.160.9.123"
-        PORT="47122"
-        BINARY_PATH="target/release/virtual_meter_server"
-        CONFIG_PATH="config"
-        DEPLOY_PATH="deploy"
-        DEST_PATH="/home/deploy/virtual_meter_server"
-
-        # Check if the binary and config directory exist before attempting to upload
-        if [[ ! -f "$BINARY_PATH" ]]; then
-          echo "Error: Binary file does not exist at $BINARY_PATH"
-          exit 1
-        fi
-
-        if [[ ! -d "$CONFIG_PATH" ]]; then
-          echo "Error: Config directory does not exist at $CONFIG_PATH"
-          exit 1
-        fi
-        
-        if [[ ! -d "$DEPLOY_PATH" ]]; then
-          echo "Error: Deploy directory does not exist at $CONFIG_PATH"
-          exit 1
-        fi
-
-        # Use SFTP to transfer files
-        sftp -o StrictHostKeyChecking=no -i "id_rsa" -P "$PORT" "$USER@$SERVER_IP" <<EOF
-        put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
-        put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
-        put -r "$DEPLOY_PATH" "$DEST_PATH/$DEPLOY_PATH"  # Upload the config directory recursively
-        EOF
-
-        echo "Transfer completed successfully."
+        for dir in deploy/*/; do
+          (cd $dir && chmod +x transfer_artifact && ./transfer_artifact)
+        done
+       
