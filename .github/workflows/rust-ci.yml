@@ -20,35 +20,6 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Set up SSH key
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.PK_BACHELOR_DEPLOY }}
-      run: |
-        echo "The secret value is: $SSH_PRIVATE_KEY"
-        echo "$SSH_PRIVATE_KEY" > id_rsa
-        chmod 600 id_rsa
-
-    - name: Create remote directory
-      run: |
-        USER="deploy"
-        SERVER_IP="217.160.9.123"
-        PORT="47122"
-        DIR_PATH="/home/deploy/virtual_meter_server"
-        
-    
-        ssh -o StrictHostKeyChecking=no -i "id_rsa" -p "$PORT" "$USER@$SERVER_IP" bash -c "'
-        if [ -e \"$DIR_PATH\" ]; then
-            if [ -d \"$DIR_PATH\" ]; then
-                echo \"Directory already exists.\"
-            else
-                echo \"A file with the same name exists. Aborting.\"
-                exit 1
-            fi
-        else
-            mkdir -p \"$DIR_PATH\"
-            echo \"Directory created.\"
-        fi
-        '"
 
     - name: Upload deploy directory
       uses: actions/upload-artifact@v3
@@ -56,6 +27,13 @@ jobs:
         name: deploy
         path: |
           deploy/**  # Include all files in the deploy directory
+
+    - name: Upload transfer_artifact procedure
+      uses: actions/upload-artifact@v3
+      with:
+        name: transfer_artifact
+        path: |
+          transfer_artifact
 
     - name: Install yq yaml bash processor
       run: |
@@ -93,24 +71,9 @@ jobs:
           target/release/virtual_meter_server
           config/**  # Include all files in the config directory
 
-    - name: Debug Artifact location
-      run: |
-        stat target/release/virtual_meter_server
-        pwd
-        
-    - name: Exit workflow
-      run: |
-        pwd
-        stat /home/runner/work/virtual-meter/virtual-meter/target/release/virtual_meter_server
-        exit 1
-
-
-
-
-
     - name: Transfer binary and config via SFTP
       run: |
         for dir in deploy/*/; do
-          (cd $dir && chmod +x transfer_artifact && ./transfer_artifact)
+          chmod +x transfer_artifact && ./transfer_artifact $dir
         done
        

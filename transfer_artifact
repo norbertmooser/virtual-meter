@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Check if directory parameter is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <directory>"
+    echo "Example: $0 /path/to/directory"
+    exit 1
+fi
+
+# Store directory parameter
+DIR_PATH="$1"
+
+# Check if directory exists
+if [ ! -d "$DIR_PATH" ]; then
+    echo "Error: Directory '$DIR_PATH' not found"
+    exit 1
+fi
+
+# Check if info.yml exists in the specified directory
+if [ ! -f "$DIR_PATH/info.yml" ]; then
+    echo "Error: info.yml not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Read values from the YAML file using the provided directory
+HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
+USER=$(yq '.general.user' "$DIR_PATH/info.yml")
+SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
+PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
+
+# Read paths
+BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
+CONFIG_PATH=$(yq '.paths.config_path' "$DIR_PATH/info.yml")
+DEST_PATH=$(yq '.paths.dest_path' "$DIR_PATH/info.yml")
+
+# Example usage of the variables
+echo "Connecting to $HOSTNAME at $SERVER_IP:$PORT as $USER"
+echo "Binary path: $BINARY_PATH"
+echo "Config path: $CONFIG_PATH"
+echo "Destination path: $DEST_PATH"
+
+# Check if key file exists in the specified directory
+if [ ! -f "$DIR_PATH/key" ]; then
+    echo "Error: SSH key file 'key' not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Use SFTP to transfer files
+sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
+put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
+EOF
+
+# Remove the key file
+rm "$DIR_PATH/key"
