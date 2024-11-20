@@ -28,6 +28,7 @@ USER=$(yq '.general.user' "$DIR_PATH/info.yml")
 SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
 PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
 
+
 # Read paths
 BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
 CONFIG_PATH=$(yq '.paths.config_path' "$DIR_PATH/info.yml")
