@@ -22,6 +22,7 @@ put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 put -r "$CONFIG_PATH" "$DEST_PATH/$CONFIG_PATH"  # Upload the config directory recursively
 EOF
 
+
 rm "key"
 
 
