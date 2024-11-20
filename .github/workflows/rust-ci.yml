@@ -69,26 +69,21 @@ jobs:
           (cd $dir && chmod +x check_target_dir && ./check_target_dir)
         done
 
-    - name: Exit workflow
-      run: |
-        pwd
-        stat /home/runner/work/virtual-meter/virtual-meter/target/release/virtual_meter_server
-        exit 1
-
-    - name: Create artifact (Set up Rust)
-      uses: actions-rs/toolchain@v1.0.0
-      with:
-        toolchain: stable
-        override: true
-
-    - name: Create artifact (Build)
-      run: cargo build --release --verbose
-
-    # - name: Run tests
-    #   run: cargo test --verbose
-
-    # - name: List target directory
-    #   run: ls -R target/
+        
+        - name: Create artifact (Set up Rust)
+        uses: actions-rs/toolchain@v1.0.0
+        with:
+          toolchain: stable
+          override: true
+          
+          - name: Create artifact (Build)
+          run: cargo build --release --verbose
+          
+          # - name: Run tests
+          #   run: cargo test --verbose
+          
+          # - name: List target directory
+          #   run: ls -R target/
 
     - name: Upload binary and config directory
       uses: actions/upload-artifact@v3
@@ -102,7 +97,12 @@ jobs:
       run: |
         stat target/release/virtual_meter_server
         pwd
-
+        
+    - name: Exit workflow
+      run: |
+        pwd
+        stat /home/runner/work/virtual-meter/virtual-meter/target/release/virtual_meter_server
+        exit 1
 
 
 
