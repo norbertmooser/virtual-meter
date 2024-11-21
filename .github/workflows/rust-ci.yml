@@ -35,6 +35,13 @@ jobs:
         path: |
           transfer_artifact
 
+    - name: Upload check_target_dir procedure
+      uses: actions/upload-artifact@v3
+      with:
+        name: check_target_dir
+        path: |
+          check_target_dir
+
     - name: Install yq yaml bash processor
       run: |
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64

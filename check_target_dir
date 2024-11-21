@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# Check if directory parameter is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <directory>"
+    echo "Example: $0 /path/to/directory"
+    exit 1
+fi
+
+# Store directory parameter
+DIR_PATH="$1"
+
+# Check if directory exists
+if [ ! -d "$DIR_PATH" ]; then
+    echo "Error: Directory '$DIR_PATH' not found"
+    exit 1
+fi
+
+# Check if info.yml exists in the specified directory
+if [ ! -f "$DIR_PATH/info.yml" ]; then
+    echo "Error: info.yml not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Check and unzip key.zip if it exists
+if [ -f "$DIR_PATH/key.zip" ]; then
+    echo "Unzipping key.zip in $DIR_PATH"
+    unzip -o -P "241120" "$DIR_PATH/key.zip" -d "$DIR_PATH"
+else
+    echo "Error: key.zip not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Read values from the YAML file using the provided directory
+HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
+USER=$(yq '.general.user' "$DIR_PATH/info.yml")
+SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
+PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
+
+# Read paths
+BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
+CONFIG_PATH=$(yq '.paths.config_path' "$DIR_PATH/info.yml")
+DEST_PATH=$(yq '.paths.dest_path' "$DIR_PATH/info.yml")
+
+# Example usage of the variables
+echo "Connecting to $HOSTNAME at $SERVER_IP:$PORT as $USER"
+
+# Check if key file exists after unzipping
+if [ ! -f "$DIR_PATH/key" ]; then
+    echo "Error: SSH key file 'key' not found in directory '$DIR_PATH' after unzipping"
+    exit 1
+fi
+
+ssh -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" bash -c "'
+    if [ -e \"$DEST_PATH\" ]; then
+        if [ -d \"$DEST_PATH\" ]; then
+            echo \"Directory already exists.\"
+        else
+            echo \"A file with the same name exists. Aborting.\"
+            exit 1
+        fi
+    else
+        mkdir -p \"$DEST_PATH\"
+        echo \"Directory created.\"
+    fi
+    '"
