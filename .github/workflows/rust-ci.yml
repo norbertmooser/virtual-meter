@@ -20,21 +20,13 @@ jobs:
       with:
         node-version: '20'
 
-
     - name: Upload deploy directory
       uses: actions/upload-artifact@v3
       with:
         name: deploy
         path: |
           deploy/**  # Include all files in the deploy directory
-
-    - name: Upload transfer_artifact procedure
-      uses: actions/upload-artifact@v3
-      with:
-        name: transfer_artifact
-        path: |
-          transfer_artifact
-
+          
     - name: Upload check_target_dir procedure
       uses: actions/upload-artifact@v3
       with:
@@ -42,19 +34,23 @@ jobs:
         path: |
           check_target_dir
 
-
+    - name: Upload transfer_artifact procedure      
+      uses: actions/upload-artifact@v3
+      with:
+        name: transfer_artifact
+        path: |
+          transfer_artifact
+      
     - name: Install yq yaml bash processor
       run: |
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         chmod a+x /usr/local/bin/yq
 
-    # Leaves the decrypted key in the deploy/*/ directory
     - name: Loop through deploy directory check every target directory
       run: |
         for dir in deploy/*/; do
           chmod +x check_target_dir && ./check_target_dir &dir
         done
-
         
     - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
