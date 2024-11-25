@@ -52,7 +52,7 @@ jobs:
     - name: Loop through deploy directory check every target directory
       run: |
         for dir in deploy/*/; do
-          chmod +x check_target_dir && ./check_target_dir &dir)
+          chmod +x check_target_dir && ./check_target_dir &dir
         done
 
         
