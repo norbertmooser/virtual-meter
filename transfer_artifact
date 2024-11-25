@@ -22,6 +22,15 @@ if [ ! -f "$DIR_PATH/info.yml" ]; then
     exit 1
 fi
 
+# Check and unzip key.zip if it exists
+if [ -f "$DIR_PATH/key.zip" ]; then
+    echo "Unzipping key.zip in $DIR_PATH"
+    unzip -o -P "241120" "$DIR_PATH/key.zip" -d "$DIR_PATH"
+else
+    echo "Error: key.zip not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
 # Read values from the YAML file using the provided directory
 HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
 USER=$(yq '.general.user' "$DIR_PATH/info.yml")
