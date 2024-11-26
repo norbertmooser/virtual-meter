@@ -1,0 +1,20 @@
+# info.yml
+
+# General Information
+general:
+  hostname: "blechdepp"
+  user: "deploy"
+  server_ip: "82.165.247.59"
+  port: 47122
+
+# Paths
+paths:
+  binary_path: "target/release/virtual_meter_server"
+  config_path: "config"
+  dest_path: "/home/deploy/virtual_meter_server"
+
+# Additional Information
+additional_info:
+  description: "This YAML file contains configuration details for deployment."
+  created_by: "Your Name"
+  created_on: "2024-11-26"  # Update with the current date
