@@ -70,10 +70,10 @@ fi
 
 # If backup successful, proceed with regular file transfer
 sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
-mkdir "/home/deploy"
-mkdir "/home/deploy/virtual_meter_server"
+rm "$DEST_PATH/virtual_meter_server"
+rm -r "$DEST_PATH/config"
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
-mkdir "/home/deploy/virtual_meter_server/config"
+mkdir "$DEST_PATH/config"
 put -r "$CONFIG_PATH" "$DEST_PATH/"
 EOF
 
