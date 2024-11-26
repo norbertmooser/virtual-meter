@@ -62,7 +62,7 @@ chmod 600 "$DIR_PATH/key"
 
 # Execute backup script on remote machine
 echo "Executing backup on remote machine..."
-ssh -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP"  < backup_virtual_meter_server
+ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP"  < backup_virtual_meter_server
 if [ $? -ne 0 ]; then
     echo "Remote backup failed"
     exit 1
