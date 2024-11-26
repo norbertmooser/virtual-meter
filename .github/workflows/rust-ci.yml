@@ -40,6 +40,13 @@ jobs:
         name: transfer_artifact
         path: |
           transfer_artifact
+
+    - name: Upload backup_virtual_meter_server procedure      
+      uses: actions/upload-artifact@v3
+      with:
+        name: backup_virtual_meter_server
+        path: |
+          backup_virtual_meter_server
       
     - name: Install yq yaml bash processor
       run: |
@@ -48,9 +55,7 @@ jobs:
 
     - name: Loop through deploy directory check every target directory
       run: |
-        for dir in deploy/*/; do
-          chmod +x check_target_dir && ./check_target_dir &dir
-        done
+        chmod +x check_target_dir && ./check_target_dir
         
     - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
