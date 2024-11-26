@@ -2,8 +2,7 @@
 
 # Extract the directory name and store it in a variable
 # Extract the service name from the script name (remove "backup_" prefix)
-SERVICE_NAME=${0##*backup_}
-SERVICE_NAME=${SERVICE_NAME##*/}  # Handle case when script is called with path
+SERVICE_NAME="virtual_meter_server"
 
 # Check if service directory exists
 if [ ! -d "$SERVICE_NAME" ]; then
