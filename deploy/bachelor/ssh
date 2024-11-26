@@ -22,6 +22,6 @@ if [ ! -f "$SSH_KEY_PATH" ]; then
 fi
 
 # SSH into the server
-ssh -o StrictHostKeyChecking=no -i "$SSH_KEY_PATH" -p "$PORT" "$USER@$SERVER_IP"
+ssh -q -o LogLevel=QUIET -o StrictHostKeyChecking=no -i "$SSH_KEY_PATH" -p "$PORT" "$USER@$SERVER_IP"
 rm key
 
