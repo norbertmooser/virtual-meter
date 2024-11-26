@@ -62,10 +62,11 @@ chmod 600 "$DIR_PATH/key"
 
 # Use SFTP to transfer files
 sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
-mkdir -p "$DEST_PATH"
+mkdir "/home/deploy"
+mkdir "/home/deploy/virtual_meter_server"
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
-mkdir -p "$DEST_PATH/$CONFIG_PATH"
-put -r "$CONFIG_PATH/." "$DEST_PATH/$CONFIG_PATH/"
+mkdir "/home/deploy/virtual_meter_server/config"
+put -r "$CONFIG_PATH" "$DEST_PATH/"
 EOF
 
 # Remove the key file
