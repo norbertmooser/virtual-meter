@@ -74,4 +74,4 @@ for dir in deploy/*/; do
     create_remote_directory "$DIR_PATH"
 done
 
-exit 1
+exit 0
