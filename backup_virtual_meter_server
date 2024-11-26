@@ -7,7 +7,7 @@ SERVICE_NAME="virtual_meter_server"
 # Check if service directory exists
 if [ ! -d "$SERVICE_NAME" ]; then
     echo "Error: Directory '$SERVICE_NAME' not found"
-    exit 1
+    exit 0
 fi
 
 # Create timestamp in required format
