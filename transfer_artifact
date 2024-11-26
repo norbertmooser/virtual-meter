@@ -60,7 +60,15 @@ fi
 # Set correct permissions for the SSH key
 chmod 600 "$DIR_PATH/key"
 
-# Use SFTP to transfer files
+# Execute backup script on remote machine
+echo "Executing backup on remote machine..."
+ssh -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" "cd $DEST_PATH && bash -s" < backup_virtual_meter_server
+if [ $? -ne 0 ]; then
+    echo "Remote backup failed"
+    exit 1
+fi
+
+# If backup successful, proceed with regular file transfer
 sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
 mkdir "/home/deploy"
 mkdir "/home/deploy/virtual_meter_server"
