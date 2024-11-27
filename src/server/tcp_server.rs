@@ -147,24 +147,34 @@ pub fn initialize_read_registers(register_data: &mut RegisterData, config: &Mete
     }
 }
 
-pub async fn server_context(socket_addr: SocketAddr, config_path: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn server_context(config_path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let config = MeterConfig::from_file(config_path)?; // Load the config
+    
+    // Create SocketAddr from config values
+    let socket_addr: SocketAddr = format!("{}:{}", config.meter_data.ip, config.meter_data.port)
+        .parse()
+        .expect("Failed to parse socket address from config");
+    
     println!("Starting up server on {socket_addr}");
     let listener: TcpListener = TcpListener::bind(socket_addr).await?;
     let server: Server = Server::new(listener);
+    
     let new_service = move |_socket_addr| {
-        let service: ModbusTcpService = ModbusTcpService::new(&config); // Updated name here
+        let service: ModbusTcpService = ModbusTcpService::new(&config);
         Ok(Some(service))
     };
+    
     let on_connected = |stream, socket_addr| {
         let new_service = new_service.clone();
         async move {
             accept_tcp_connection(stream, socket_addr, new_service)
         }
     };
+    
     let on_process_error = |err| {
         eprintln!("{err}");
     };
+    
     server.serve(&on_connected, on_process_error).await?;
     Ok(())
 }
