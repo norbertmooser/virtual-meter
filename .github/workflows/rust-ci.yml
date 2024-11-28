@@ -29,8 +29,8 @@ jobs:
       run: |
         chmod +x deploy_routines/check_target_dir && ./deploy_routines/check_target_dir
 
-    - name: Exit
-      run: exit 1
+    # - name: Exit
+    #   run: exit 1
         
     - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
