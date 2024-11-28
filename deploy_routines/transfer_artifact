@@ -82,7 +82,10 @@ fi
 echo "Starting SFTP file transfer..."
 if sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
 rm "$DEST_PATH/virtual_meter_server"
-rm -r "$DEST_PATH/config"
+cd "$DEST_PATH/config"
+rm *
+cd ..
+rmdir "config"  # Remove the empty directory after files are deleted
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 mkdir "$DEST_PATH/config"
 put -r "$CONFIG_PATH" "$DEST_PATH/"
