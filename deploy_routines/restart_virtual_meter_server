@@ -26,7 +26,10 @@ echo "Checking configuration: IP=$IP, PORT=$PORT"
 PROCESS_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$")
 if [ ! -z "$PROCESS_PID" ]; then
     echo "Found virtual_meter_server process with PID: $PROCESS_PID"
-    sudo -u $USERNAME kill $PROCESS_PID
+    if ! sudo -u $USERNAME kill $PROCESS_PID; then
+       echo "Error: Failed to kill process $PROCESS_PID"
+       exit 1
+    fi
     echo "Killed process $PROCESS_PID"
     sleep 1
 fi
