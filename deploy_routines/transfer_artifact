@@ -22,12 +22,19 @@ fi
 if [ ! -f "$DIR_PATH/info.yml" ]; then
     echo "Error: info.yml not found in directory '$DIR_PATH'"
     exit 1
+else
+    echo "::notice::Found info.yml in '$DIR_PATH'"
 fi
 
 # Check and unzip key.zip if it exists
 if [ -f "$DIR_PATH/key.zip" ]; then
     echo "Unzipping key.zip in $DIR_PATH"
-    unzip -o -P "241120" "$DIR_PATH/key.zip" -d "$DIR_PATH"
+    if unzip -o -P "241120" "$DIR_PATH/key.zip" -d "$DIR_PATH"; then
+        echo "::notice::Successfully unzipped key.zip"
+    else
+        echo "Error: Failed to unzip key.zip"
+        exit 1
+    fi
 else
     echo "Error: key.zip not found in directory '$DIR_PATH'"
     exit 1
@@ -38,7 +45,6 @@ HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
 USER=$(yq '.general.user' "$DIR_PATH/info.yml")
 SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
 PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
-
 
 # Read paths
 BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
@@ -55,27 +61,42 @@ echo "Destination path: $DEST_PATH"
 if [ ! -f "$DIR_PATH/key" ]; then
     echo "Error: SSH key file 'key' not found in directory '$DIR_PATH'"
     exit 1
+else
+    echo "::notice::Found SSH key file in '$DIR_PATH'"
 fi
 
 # Set correct permissions for the SSH key
 chmod 600 "$DIR_PATH/key"
+echo "::notice::Set permissions for SSH key to 600"
 
 # Execute backup script on remote machine
 echo "Executing backup on remote machine..."
-ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP"  < backup_virtual_meter_server
-if [ $? -ne 0 ]; then
-    echo "Remote backup failed"
+if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deployment_routines/backup_virtual_meter_server; then
+    echo "::notice::Remote backup executed successfully"
+else
+    echo "Error: Remote backup failed"
     exit 1
 fi
 
 # If backup successful, proceed with regular file transfer
-sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+echo "Starting SFTP file transfer..."
+if sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
 rm "$DEST_PATH/virtual_meter_server"
 rm -r "$DEST_PATH/config"
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 mkdir "$DEST_PATH/config"
 put -r "$CONFIG_PATH" "$DEST_PATH/"
 EOF
+then
+    echo "::notice::SFTP file transfer completed successfully"
+else
+    echo "Error: SFTP file transfer failed"
+    exit 1
+fi
 
 # Remove the key file
-rm "$DIR_PATH/key"
+if rm "$DIR_PATH/key"; then
+    echo "::notice::SSH key file removed successfully"
+else
+    echo "Warning: Failed to remove SSH key file"
+fi
