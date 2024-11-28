@@ -20,13 +20,13 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Upload deploy directory
-      uses: actions/upload-artifact@v3
-      with:
-        name: deploy
-        path: deploy**
-        if-no-files-found: warn
-        include-hidden-files: false
+    # - name: Upload deploy directory
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: deploy
+    #     path: deploy**
+    #     if-no-files-found: warn
+    #     include-hidden-files: false
         
     # - name: Upload deploy_routines directory
     #   uses: actions/upload-artifact@v3
@@ -46,19 +46,19 @@ jobs:
     #     path: |
     #       check_target_dir
 
-    - name: Upload transfer_artifact procedure      
-      uses: actions/upload-artifact@v3
-      with:
-        name: transfer_artifact
-        path: |
-          transfer_artifact
+    # - name: Upload transfer_artifact procedure      
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: transfer_artifact
+    #     path: |
+    #       transfer_artifact
 
-    - name: Upload backup_virtual_meter_server procedure      
-      uses: actions/upload-artifact@v3
-      with:
-        name: backup_virtual_meter_server
-        path: |
-          backup_virtual_meter_server
+    # - name: Upload backup_virtual_meter_server procedure      
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: backup_virtual_meter_server
+    #     path: |
+    #       backup_virtual_meter_server
       
     - name: Install yq yaml bash processor
       run: |
