@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Check if script is run with sudo
+# if [ "$EUID" -ne 0 ]; then 
+#     echo "Please run as root or with sudo"
+#     exit 1
+# fi
+
+USERNAME="runningmate"
+SERVICE_DIR="/home/$USERNAME/virtual_meter_server"
+CONFIG_FILE="$SERVICE_DIR/config/meter_config.yaml"
+
+# Function to get config values
+get_config_value() {
+    local key=$1
+    sudo -u $USERNAME bash -c "cd $SERVICE_DIR && yq '.meter_data.$key' 'config/meter_config.yaml'"
+}
+
+# Get port and IP from config
+PORT=$(get_config_value "port")
+IP=$(get_config_value "ip")
+
+echo "Checking configuration: IP=$IP, PORT=$PORT"
+
+# Find running virtual_meter_server process
+PROCESS_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$")
+if [ ! -z "$PROCESS_PID" ]; then
+    echo "Found virtual_meter_server process with PID: $PROCESS_PID"
+    sudo -u $USERNAME kill $PROCESS_PID
+    echo "Killed process $PROCESS_PID"
+    sleep 1
+fi
+
+# Check if port is still in use
+PORT_PID=$(sudo -u $USERNAME lsof -t -i:$PORT -s TCP:LISTEN)
+if [ ! -z "$PORT_PID" ]; then
+    echo "Port $PORT still in use by PID: $PORT_PID"
+    sudo -u $USERNAME kill $PORT_PID
+    echo "Killed process using port $PORT"
+    sleep 1
+fi
+
+# Start new instance
+echo "Starting new virtual_meter_server instance..."
+sudo -u $USERNAME bash -c "cd $SERVICE_DIR && ./virtual_meter_server &"
+
+# Verify new process is running
+sleep 2
+NEW_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$")
+if [ ! -z "$NEW_PID" ]; then
+    echo "Successfully started virtual_meter_server with PID: $NEW_PID"
+else
+    echo "Failed to start virtual_meter_server"
+    exit 1
+fi
+
+# Verify port is listening
+if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN >/dev/null 2>&1; then
+    echo "Service is listening on port $PORT"
+else
+    echo "Service failed to bind to port $PORT"
+    exit 1
+fi
