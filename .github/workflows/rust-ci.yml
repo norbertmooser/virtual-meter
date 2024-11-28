@@ -35,6 +35,9 @@ jobs:
           path: deploy_routines/**  # Include all files in the deploy directory
           if-no-files-found: warn
           include-hidden-files: false
+
+    - name: Exit
+      run: exit 1
             
     - name: Upload check_target_dir procedure
       uses: actions/upload-artifact@v3
