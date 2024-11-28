@@ -23,22 +23,25 @@ jobs:
     - name: List deploy directory
       run: ls -R deploy/
 
-    - name: Exit
-      run: exit 1
-
     - name: Upload deploy directory
       uses: actions/upload-artifact@v3
       with:
         name: deploy
         path: |
-          deploy/**  # Include all files in the deploy directory
-
+          deploy/bachelor/**
+          deploy/blechdepp/**
+        if-no-files-found: warn
+        include-hidden-files: false
+        
+    - name: Exit
+      run: exit 1
+    
     - name: Upload deploy_routines directory
       uses: actions/upload-artifact@v3
       with:
-        name: deploy
-        path: |
-          deploy_routines/**  # Include all files in the deploy directory
+          name: deploy
+          path: |
+            deploy_routines/**  # Include all files in the deploy directory
           
     - name: Upload check_target_dir procedure
       uses: actions/upload-artifact@v3
