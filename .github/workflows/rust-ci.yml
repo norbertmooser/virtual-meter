@@ -36,15 +36,15 @@ jobs:
           if-no-files-found: warn
           include-hidden-files: false
 
-    - name: Exit
-      run: exit 1
+    # - name: Exit
+    #   run: exit 1
             
-    - name: Upload check_target_dir procedure
-      uses: actions/upload-artifact@v3
-      with:
-        name: check_target_dir
-        path: |
-          check_target_dir
+    # - name: Upload check_target_dir procedure
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: check_target_dir
+    #     path: |
+    #       check_target_dir
 
     - name: Upload transfer_artifact procedure      
       uses: actions/upload-artifact@v3
@@ -67,7 +67,10 @@ jobs:
 
     - name: Loop through deploy directory check every target directory
       run: |
-        chmod +x check_target_dir && ./check_target_dir
+        chmod +x deploy/check_target_dir && ./deploy/check_target_dir
+
+    - name: Exit
+      run: exit 1
         
     - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
