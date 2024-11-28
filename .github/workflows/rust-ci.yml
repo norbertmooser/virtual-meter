@@ -20,46 +20,6 @@ jobs:
       with:
         node-version: '20'
 
-    # - name: Upload deploy directory
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: deploy
-    #     path: deploy**
-    #     if-no-files-found: warn
-    #     include-hidden-files: false
-        
-    # - name: Upload deploy_routines directory
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #       name: deploy
-    #       path: deploy_routines/**  # Include all files in the deploy directory
-    #       if-no-files-found: warn
-    #       include-hidden-files: false
-
-    # - name: Exit
-    #   run: exit 1
-            
-    # - name: Upload check_target_dir procedure
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: check_target_dir
-    #     path: |
-    #       check_target_dir
-
-    # - name: Upload transfer_artifact procedure      
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: transfer_artifact
-    #     path: |
-    #       transfer_artifact
-
-    # - name: Upload backup_virtual_meter_server procedure      
-    #   uses: actions/upload-artifact@v3
-    #   with:
-    #     name: backup_virtual_meter_server
-    #     path: |
-    #       backup_virtual_meter_server
-      
     - name: Install yq yaml bash processor
       run: |
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
@@ -81,12 +41,6 @@ jobs:
     - name: Create artifact (Build)
       run: cargo build --release --verbose
         
-        # - name: Run tests
-        #   run: cargo test --verbose
-        
-        # - name: List target directory
-        #   run: ls -R target/
-
     - name: Upload binary and config directory
       uses: actions/upload-artifact@v3
       with:
@@ -98,6 +52,6 @@ jobs:
     - name: Transfer binary and config via SFTP
       run: |
         for dir in deploy/*/; do
-          chmod +x transfer_artifact && ./transfer_artifact $dir
+          chmod +x ./deploy_routines/transfer_artifact && ./deploy_routines/transfer_artifact $dir
         done
        
