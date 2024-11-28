@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Check if directory parameter is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <directory>"
+    echo "Example: $0 /path/to/directory"
+    exit 1
+fi
+
+# Store directory parameter
+DIR_PATH="$1"
+
+# Check if directory exists
+if [ ! -d "$DIR_PATH" ]; then
+    echo "Error: Directory '$DIR_PATH' not found"
+    exit 1
+else
+    echo "::notice::Working Directory '$DIR_PATH'"
+fi
+
+# Check if info.yml exists in the specified directory
+if [ ! -f "$DIR_PATH/info.yml" ]; then
+    echo "Error: info.yml not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Check and unzip key.zip if it exists
+if [ -f "$DIR_PATH/key.zip" ]; then
+    echo "Unzipping key.zip in $DIR_PATH"
+    unzip -o -P "241120" "$DIR_PATH/key.zip" -d "$DIR_PATH"
+else
+    echo "Error: key.zip not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Read values from the YAML file using the provided directory
+HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
+USER=$(yq '.general.user' "$DIR_PATH/info.yml")
+SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
+PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
+
+
+# Read paths
+BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
+CONFIG_PATH=$(yq '.paths.config_path' "$DIR_PATH/info.yml")
+DEST_PATH=$(yq '.paths.dest_path' "$DIR_PATH/info.yml")
+
+# Example usage of the variables
+echo "Connecting to $HOSTNAME at $SERVER_IP:$PORT as $USER"
+echo "Binary path: $BINARY_PATH"
+echo "Config path: $CONFIG_PATH"
+echo "Destination path: $DEST_PATH"
+
+# Check if key file exists in the specified directory
+if [ ! -f "$DIR_PATH/key" ]; then
+    echo "Error: SSH key file 'key' not found in directory '$DIR_PATH'"
+    exit 1
+fi
+
+# Set correct permissions for the SSH key
+chmod 600 "$DIR_PATH/key"
+
+# Execute backup script on remote machine
+echo "Executing backup on remote machine..."
+ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP"  < backup_virtual_meter_server
+if [ $? -ne 0 ]; then
+    echo "Remote backup failed"
+    exit 1
+fi
+
+# If backup successful, proceed with regular file transfer
+sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+rm "$DEST_PATH/virtual_meter_server"
+rm -r "$DEST_PATH/config"
+put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
+mkdir "$DEST_PATH/config"
+put -r "$CONFIG_PATH" "$DEST_PATH/"
+EOF
+
+# Remove the key file
+rm "$DIR_PATH/key"

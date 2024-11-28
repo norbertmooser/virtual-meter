@@ -26,6 +26,13 @@ jobs:
         name: deploy
         path: |
           deploy/**  # Include all files in the deploy directory
+
+    - name: Upload deploy_routines directory
+      uses: actions/upload-artifact@v3
+      with:
+        name: deploy
+        path: |
+          deploy_routines/**  # Include all files in the deploy directory
           
     - name: Upload check_target_dir procedure
       uses: actions/upload-artifact@v3
