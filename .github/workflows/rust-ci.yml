@@ -20,6 +20,12 @@ jobs:
       with:
         node-version: '20'
 
+    - name: List deploy directory
+      run: ls -R deploy/
+
+    - name: Exit
+      run: exit 1
+
     - name: Upload deploy directory
       uses: actions/upload-artifact@v3
       with:
