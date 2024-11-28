@@ -71,7 +71,7 @@ echo "::notice::Set permissions for SSH key to 600"
 
 # Execute backup script on remote machine
 echo "Executing backup on remote machine..."
-if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deployment_routines/backup_virtual_meter_server; then
+if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/backup_virtual_meter_server; then
     echo "::notice::Remote backup executed successfully"
 else
     echo "Error: Remote backup failed"
