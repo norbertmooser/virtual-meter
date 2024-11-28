@@ -67,7 +67,7 @@ jobs:
 
     - name: Loop through deploy directory check every target directory
       run: |
-        chmod +x deploy/check_target_dir && ./deploy/check_target_dir
+        chmod +x deploy_routines/check_target_dir && ./deploy_routines/check_target_dir
 
     - name: Exit
       run: exit 1
