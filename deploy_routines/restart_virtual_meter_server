@@ -1,10 +1,12 @@
 #!/bin/bash
 
-# Check if script is run with sudo
-# if [ "$EUID" -ne 0 ]; then 
-#     echo "Please run as root or with sudo"
-#     exit 1
-# fi
+./check_runningmate_target_symlink
+
+# Check the exit status of the previous command
+if [ $? -ne 0 ]; then
+    echo "Error: check_runningmate_target_symlink failed. Exiting."
+    exit 1  # Exit with an error code
+fi
 
 USERNAME="runningmate"
 SERVICE_DIR="/home/$USERNAME/virtual_meter_server"

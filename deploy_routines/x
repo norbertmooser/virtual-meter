@@ -1,0 +1,50 @@
+#!/bin/bash
+
+DEPLOY_USER="deploy"
+RUN_USER="runningmate"
+APP_PATH="virtual_meter_server"
+
+# Check if the symlink exists
+./check_runningmate_target_symlink
+
+# Check the exit status of the previous command
+if [ $? -ne 0 ]; then
+    echo "Symlink does not exist. Initializing RUN_HOMEDIR."
+    RUN_HOMEDIR=$(sudo -u $RUN_USER bash -c "echo /home/\$(whoami)")
+
+    # Create the symlink
+    echo "Creating symlink for $APP_PATH."
+    if sudo -u $RUN_USER bash -c "ln -s /home/$DEPLOY_USER/$APP_PATH /home/$RUN_USER/$APP_PATH"; then
+        echo "Symlink created successfully: /home/$RUN_USER/$APP_PATH"
+    else
+        echo "Failed to create symlink: /home/$RUN_USER/$APP_PATH"
+        exit 1  # Exit with an error code
+    fi
+
+    # Verify if the symlink was created
+    if [ -L "/home/$RUN_USER/$APP_PATH" ]; then
+        echo "Symlink created successfully: /home/$RUN_USER/$APP_PATH"
+        
+        # Check if the target of the symlink is executable
+        TARGET_PATH=$(readlink -f "/home/$RUN_USER/$APP_PATH")
+        if [ -x "$TARGET_PATH" ]; then
+            echo "The program at '$TARGET_PATH' is executable by $RUN_USER."
+        else
+            echo "The program at '$TARGET_PATH' is NOT executable by $RUN_USER."
+        fi
+    else
+        echo "Failed to create symlink: /home/$RUN_USER/$APP_PATH"
+    fi
+else
+    echo "Symlink exists. RUN_HOMEDIR will not be initialized."
+    
+    # Check if the target of the symlink is executable
+    TARGET_PATH=$(readlink -f "/home/$RUN_USER/$APP_PATH")
+    if [ -x "$TARGET_PATH" ]; then
+        echo "The program at '$TARGET_PATH' is executable by $RUN_USER."
+    else
+        echo "The program at '$TARGET_PATH' is NOT executable by $RUN_USER."
+        exit 1
+    fi
+fi
+exit 0
