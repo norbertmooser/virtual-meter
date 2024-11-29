@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./check_runningmate_target_symlink
+./deploy_routines/check_runningmate_target_symlink
 
 # Check the exit status of the previous command
 if [ $? -ne 0 ]; then
