@@ -89,8 +89,7 @@ rmdir "config"  # Remove the empty directory after files are deleted
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 mkdir "$DEST_PATH/config"
 put -r "$CONFIG_PATH" "$DEST_PATH/"
-mkdir "$DEST_PATH/deploy_routines"
-put -r "deploy_routines" "$DEST_PATH/deploy_routines"
+put -r "deploy_routines" "$DEST_PATH"
 
 EOF
 then
