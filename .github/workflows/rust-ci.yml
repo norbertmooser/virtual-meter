@@ -38,7 +38,7 @@ jobs:
     - name: Create artifact (Build)
       run: cargo build --release --verbose
         
-    - name: Upload binary and config directory
+    - name: Upload binary and config, deploy_routines directory
       uses: actions/upload-artifact@v3
       with:
         name: virtual_meter_server

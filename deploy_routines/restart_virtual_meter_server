@@ -1,4 +1,23 @@
 #!/bin/bash
+
+
+# Execute restart_virtual_meter_server script on the remote machine
+echo "Restarting virtual_meter_server on remote machine..."
+if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server; then
+    echo "::notice::Successfully restarted virtual_meter_server on remote machine"
+else
+    echo "Error: Failed to restart virtual_meter_server on remote machine"
+    exit 1
+fi
+
+# Remove the key file
+if rm "$DIR_PATH/key"; then
+    echo "::notice::SSH key file removed successfully"
+else
+    echo "Warning: Failed to remove SSH key file"
+fi
+
+
 echo "Current directory: $(pwd)"
 echo "Looking for: $(realpath ./deploy_routines/check_runningmate_target_symlink)"
 ./deploy_routines/check_runningmate_target_symlink
