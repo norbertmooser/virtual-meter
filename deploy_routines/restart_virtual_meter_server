@@ -95,6 +95,7 @@ sudo -u $USERNAME bash -c "cd $SERVICE_DIR && ./virtual_meter_server &"
 # Wait for a moment to allow the service to start
 sleep 2  # Adjust the duration as needed
 
+
 # Check if the service is listening on the specified port
 echo "Checking if service is listening on port $PORT as user $USERNAME..."
 if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN; then
