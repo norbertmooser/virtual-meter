@@ -100,6 +100,7 @@ sleep 2  # Adjust the duration as needed
 echo "Checking if service is listening on port $PORT as user $USERNAME..."
 if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN; then
     echo "Service is listening on port $PORT"
+    exit 0
 else
     echo "Error: Service failed to bind to port $PORT"
     exit 1
