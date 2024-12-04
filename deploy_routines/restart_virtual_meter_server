@@ -92,16 +92,12 @@ fi
 echo "Starting new virtual_meter_server instance..."
 sudo -u $USERNAME bash -c "cd $SERVICE_DIR && ./virtual_meter_server &"
 
-sleep 2
-NEW_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$" || true)
-if [ -n "$NEW_PID" ]; then
-    echo "Successfully started virtual_meter_server with PID: $NEW_PID"
-else
-    echo "Error: Failed to start virtual_meter_server"
-    exit 1
-fi
+# Wait for a moment to allow the service to start
+sleep 2  # Adjust the duration as needed
 
-if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN >/dev/null 2>&1; then
+# Check if the service is listening on the specified port
+echo "Checking if service is listening on port $PORT as user $USERNAME..."
+if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN; then
     echo "Service is listening on port $PORT"
 else
     echo "Error: Service failed to bind to port $PORT"
