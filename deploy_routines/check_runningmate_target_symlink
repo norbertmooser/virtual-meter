@@ -9,13 +9,5 @@ if [ -L "$SERVICE_DIR" ]; then
     exit 0  # Return 0 if the symlink exists
 else
     echo "The symlink 'virtual_meter_server' does not exist."
-    
-    # Additional check to see if it's a regular file or directory
-    if [ -e "$SERVICE_DIR" ]; then
-        echo "'virtual_meter_server' exists as a regular file or directory."
-    else
-        echo "'virtual_meter_server' does not exist at all."
-    fi
-    
     exit 1  # Return 1 if the symlink does not exist
 fi

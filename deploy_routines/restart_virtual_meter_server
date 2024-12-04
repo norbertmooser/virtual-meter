@@ -1,32 +1,53 @@
 #!/bin/bash
 
+set -euo pipefail
 
-# Execute restart_virtual_meter_server script on the remote machine
-echo "Restarting virtual_meter_server on remote machine..."
-if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server; then
-    echo "::notice::Successfully restarted virtual_meter_server on remote machine"
-else
-    echo "Error: Failed to restart virtual_meter_server on remote machine"
+
+# Check if sudo can be executed without a password
+if ! sudo -n true 2>/dev/null; then
+    echo "Error: This script requires passwordless sudo access. Please configure sudo to allow passwordless execution for the current user."
     exit 1
 fi
 
-# Remove the key file
-if rm "$DIR_PATH/key"; then
-    echo "::notice::SSH key file removed successfully"
-else
-    echo "Warning: Failed to remove SSH key file"
-fi
-
-
 echo "Current directory: $(pwd)"
 echo "Looking for: $(realpath ./deploy_routines/check_runningmate_target_symlink)"
-./deploy_routines/check_runningmate_target_symlink
 
-# Check the exit status of the previous command
-if [ $? -ne 0 ]; then
-    echo "Error: check_runningmate_target_symlink failed. Exiting."
-    exit 1  # Exit with an error code
+# Check if yq is installed
+if ! command -v yq &> /dev/null; then
+    echo "Info: yq is not installed. Installing yq..."
+
+    if command -v wget &> /dev/null; then
+        sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/local/bin/yq
+    elif command -v curl &> /dev/null; then
+        sudo curl -L https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -o /usr/local/bin/yq
+    else
+        echo "Error: Neither wget nor curl is installed. Please install one and rerun the script."
+        exit 1
+    fi
+    sudo chmod +x /usr/local/bin/yq
+
+    if ! command -v yq &> /dev/null; then
+        echo "Error: yq installation failed."
+        exit 1
+    fi
 fi
+
+# Check if the symlink check script exists and is executable
+if [ ! -x ./deploy_routines/check_runningmate_target_symlink ]; then
+    echo "Error: check_runningmate_target_symlink script not found or not executable."
+    exit 1
+fi
+
+# Execute the symlink check
+./deploy_routines/check_runningmate_target_symlink || {
+    echo "Error: check_runningmate_target_symlink failed. Creating symlink."
+    if sudo -u runningmate ln -s /home/deploy/virtual_meter_server /home/runningmate/virtual_meter_server; then
+        echo "Symlink created successfully."
+    else
+        echo "Error: Failed to create symlink."
+        exit 1
+    fi
+}
 
 USERNAME="runningmate"
 SERVICE_DIR="/home/$USERNAME/virtual_meter_server"
@@ -35,32 +56,34 @@ CONFIG_FILE="$SERVICE_DIR/config/meter_config.yaml"
 # Function to get config values
 get_config_value() {
     local key=$1
-    sudo -u $USERNAME bash -c "cd $SERVICE_DIR && yq '.meter_data.$key' 'config/meter_config.yaml'"
+    sudo -u $USERNAME bash -c "cd $SERVICE_DIR && yq '.meter_data.$key' '$CONFIG_FILE'"
 }
 
-# Get port and IP from config
 PORT=$(get_config_value "port")
 IP=$(get_config_value "ip")
 
 echo "Checking configuration: IP=$IP, PORT=$PORT"
 
-# Find running virtual_meter_server process
-PROCESS_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$")
-if [ ! -z "$PROCESS_PID" ]; then
+# Find and terminate running process
+PROCESS_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$" || true)
+if [ -n "$PROCESS_PID" ]; then
     echo "Found virtual_meter_server process with PID: $PROCESS_PID"
-    if ! sudo -u $USERNAME kill $PROCESS_PID; then
-       echo "Error: Failed to kill process $PROCESS_PID"
-       exit 1
+    if ! sudo -u $USERNAME kill "$PROCESS_PID"; then
+        echo "Error: Failed to kill process $PROCESS_PID"
+        exit 1
     fi
     echo "Killed process $PROCESS_PID"
     sleep 1
 fi
 
 # Check if port is still in use
-PORT_PID=$(sudo -u $USERNAME lsof -t -i:$PORT -s TCP:LISTEN)
-if [ ! -z "$PORT_PID" ]; then
+PORT_PID=$(sudo -u $USERNAME lsof -t -i:$PORT -s TCP:LISTEN || true)
+if [ -n "$PORT_PID" ]; then
     echo "Port $PORT still in use by PID: $PORT_PID"
-    sudo -u $USERNAME kill $PORT_PID
+    if ! sudo -u $USERNAME kill "$PORT_PID"; then
+        echo "Error: Failed to kill process using port $PORT"
+        exit 1
+    fi
     echo "Killed process using port $PORT"
     sleep 1
 fi
@@ -69,20 +92,18 @@ fi
 echo "Starting new virtual_meter_server instance..."
 sudo -u $USERNAME bash -c "cd $SERVICE_DIR && ./virtual_meter_server &"
 
-# Verify new process is running
 sleep 2
-NEW_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$")
-if [ ! -z "$NEW_PID" ]; then
+NEW_PID=$(sudo -u $USERNAME pgrep -f "^./virtual_meter_server$" || true)
+if [ -n "$NEW_PID" ]; then
     echo "Successfully started virtual_meter_server with PID: $NEW_PID"
 else
-    echo "Failed to start virtual_meter_server"
+    echo "Error: Failed to start virtual_meter_server"
     exit 1
 fi
 
-# Verify port is listening
 if sudo -u $USERNAME lsof -i:$PORT -s TCP:LISTEN >/dev/null 2>&1; then
     echo "Service is listening on port $PORT"
 else
-    echo "Service failed to bind to port $PORT"
+    echo "Error: Service failed to bind to port $PORT"
     exit 1
 fi
