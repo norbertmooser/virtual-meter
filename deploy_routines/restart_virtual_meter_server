@@ -10,7 +10,7 @@ if ! sudo -n true 2>/dev/null; then
 fi
 
 echo "Current directory: $(pwd)"
-echo "Looking for: $(realpath ./deploy_routines/check_runningmate_target_symlink)"
+echo "Looking for: $(realpath ./virtual_meter_server/deploy_routines/check_runningmate_target_symlink)"
 
 # Check if yq is installed
 if ! command -v yq &> /dev/null; then
@@ -33,13 +33,13 @@ if ! command -v yq &> /dev/null; then
 fi
 
 # Check if the symlink check script exists and is executable
-if [ ! -x ./deploy_routines/check_runningmate_target_symlink ]; then
+if [ ! -x ./virtual_meter_server/deploy_routines/check_runningmate_target_symlink ]; then
     echo "Error: check_runningmate_target_symlink script not found or not executable."
     exit 1
 fi
 
 # Execute the symlink check
-./deploy_routines/check_runningmate_target_symlink || {
+./virtual_meter_server/deploy_routines/check_runningmate_target_symlink || {
     echo "Error: check_runningmate_target_symlink failed. Creating symlink."
     if sudo -u runningmate ln -s /home/deploy/virtual_meter_server /home/runningmate/virtual_meter_server; then
         echo "Symlink created successfully."
