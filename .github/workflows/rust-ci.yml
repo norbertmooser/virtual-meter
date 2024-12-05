@@ -47,9 +47,6 @@ jobs:
           config/**  # Include all files in the config directory
           deploy_routines/**  # Include all files in the deploy_routines directory
 
-    - name: Exit
-      run: exit 0
-
     - name: Transfer binary and config via SFTP
       run: |
         for dir in deploy/*/; do
