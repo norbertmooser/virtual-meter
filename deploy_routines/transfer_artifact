@@ -9,6 +9,7 @@ fi
 
 # Store directory parameter
 DIR_PATH="$1"
+echo "Entering Directory '$DIR_PATH'"
 
 # Check if directory exists
 if [ ! -d "$DIR_PATH" ]; then
