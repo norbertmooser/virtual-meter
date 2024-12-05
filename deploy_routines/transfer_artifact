@@ -99,11 +99,12 @@ else
     exit 1
 fi
 
-echo "Restarting meter_server..."
-if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server; then
+if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server > output.log 2>&1; then
     echo "::notice::Restarting meter_server executed successfully"
+    cat output.log
 else
     echo "Error: Restarting meter_server failed"
+    cat output.log  # Display the output log for debugging
     exit 1
 fi
 
