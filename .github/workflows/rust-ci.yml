@@ -36,7 +36,7 @@ jobs:
         override: true
         
     - name: Create artifact (Build)
-      run: cargo build --release --verbose
+      run: cargo build --release
         
     - name: Upload binary and config, deploy_routines directory
       uses: actions/upload-artifact@v3
@@ -45,6 +45,7 @@ jobs:
         path: |
           target/release/virtual_meter_server
           config/**  # Include all files in the config directory
+          deploy_routines/**  # Include all files in the deploy_routines directory
 
     - name: Transfer binary and config via SFTP
       run: |

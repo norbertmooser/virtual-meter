@@ -90,7 +90,6 @@ put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
 mkdir "$DEST_PATH/config"
 put -r "$CONFIG_PATH" "$DEST_PATH/"
 put -r "deploy_routines" "$DEST_PATH"
-
 EOF
 then
     echo "::notice::SFTP file transfer completed successfully"
@@ -99,7 +98,7 @@ else
     exit 1
 fi
 
-if ssh -q -T -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server > output.log 2>&1; then
+if ssh -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server > output.log 2>&1; then
     echo "::notice::Restarting meter_server executed successfully"
     cat output.log
 else
