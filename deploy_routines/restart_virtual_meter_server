@@ -90,7 +90,12 @@ fi
 
 # Start new instance
 echo "Starting new virtual_meter_server instance..."
-sudo -u $USERNAME bash -c "cd $SERVICE_DIR && ./virtual_meter_server &"
+if sudo systemctl start virtual_meter_server; then
+    echo "Service started successfully."
+else
+    echo "Error: Failed to start virtual_meter_server."
+    exit 1
+fi
 
 # Wait for a moment to allow the service to start
 sleep 2  # Adjust the duration as needed
