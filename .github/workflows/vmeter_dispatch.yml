@@ -45,5 +45,6 @@ jobs:
 
     - name: Transfer binary, config and deploy_routines via SFTP
       run: |
+        ls -lh ./deploy_routines
         chmod +x ./deploy_routines/transfer_binary_config_deploy_routines && ./deploy_routines/transfer_binary_config_deploy_routines dispatcher
        
