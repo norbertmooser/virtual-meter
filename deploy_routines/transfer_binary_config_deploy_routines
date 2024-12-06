@@ -91,6 +91,7 @@ else
     exit 1
 fi
 
+
 if ssh -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -p "$PORT" "$USER@$SERVER_IP" < deploy_routines/restart_virtual_meter_server; then
     echo "::notice::Restarting meter_server executed successfully"
 else
