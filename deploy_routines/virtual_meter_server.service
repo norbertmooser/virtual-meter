@@ -1,0 +1,14 @@
+   [Unit]
+   Description=Virtual Meter Server
+   After=network.target
+
+   [Service]
+   User=runningmate  
+   WorkingDirectory=/home/runningmate/virtual_meter_server
+   ExecStart=/home/runningmate/virtual_meter_server/virtual_meter_server
+   Restart=always
+   StandardOutput=journal
+   StandardError=journal
+
+   [Install]
+   WantedBy=multi-user.target

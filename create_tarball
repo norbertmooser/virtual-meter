@@ -1,0 +1,21 @@
+#!/bin/bash
+
+create_tarball() {
+    # Get current date and time
+    DATETIME=$(date '+%y%m%d_%H%M')
+
+    # Create filename
+    FILENAME="${DATETIME}_backup.tar.gz"
+
+    # Create tarball, excluding 'target' and '.git' directories
+    find . -maxdepth 2 \
+        -not -path './target*' \
+        -not -path './.git*' \
+        -print0 | \
+    tar --null -czf "$FILENAME" --no-recursion --files-from -
+
+    echo "Backup created: $FILENAME"
+}
+
+# Call the function
+create_tarball

@@ -1,0 +1,14 @@
+Pseudo-terminal will not be allocated because stdin is not a terminal.
+Current directory: /home/deploy
+Looking for: /home/deploy/virtual_meter_server/deploy_routines/check_runningmate_target_symlink
+The symlink 'virtual_meter_server' exists.
+Checking configuration: IP=127.0.0.1, PORT=5020
+Found virtual_meter_server process with PID: 1976552
+Killed process 1976552
+Starting new virtual_meter_server instance...
+Starting Modbus TCP server
+Starting up server on 127.0.0.1:5020
+Checking if service is listening on port 5020 as user runningmate...
+COMMAND       PID        USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+virtual_m 1976925 runningmate    9u  IPv4 80089313      0t0  TCP localhost.localdomain:5020 (LISTEN)
+Service is listening on port 5020

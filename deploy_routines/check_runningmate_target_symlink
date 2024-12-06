@@ -1,0 +1,13 @@
+#!/bin/bash
+
+USERNAME="runningmate"
+SERVICE_DIR="/home/$USERNAME/virtual_meter_server"
+
+# Check if virtual_meter_server symlink exists
+if [ -L "$SERVICE_DIR" ]; then
+    echo "The symlink 'virtual_meter_server' exists."
+    exit 0  # Return 0 if the symlink exists
+else
+    echo "The symlink 'virtual_meter_server' does not exist."
+    exit 1  # Return 1 if the symlink does not exist
+fi

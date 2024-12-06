@@ -1,0 +1,14 @@
+#!/bin/bash
+
+while true; do
+  latest_run_id=$(gh run list --json databaseId -q '.[0].databaseId')
+  # Check if a workflow run was found
+  if [ -z "$latest_run_id" ]; then
+    echo "No workflow runs found in this repository. Checking again in 1 seconds..."
+    sleep 1  # Wait before checking again
+    continue  # Continue to the next iteration of the loop
+  fi
+
+  gh run watch "$latest_run_id"
+  sleep 1
+done
