@@ -76,14 +76,16 @@ echo "::notice::Set permissions for SSH key to 600"
 
 # If backup successful, proceed with regular file transfer
 echo "Starting SFTP file transfer..."
+DEST_PATH="/home/dispatcher/virtual_meter_server"
 if sftp -o StrictHostKeyChecking=no -i "$DIR_PATH/key" -P "$PORT" "$USER@$SERVER_IP" <<EOF
+mkdir "$DEST_PATH"
 put "$BINARY_PATH" "$DEST_PATH/virtual_meter_server"
-mkdir "$DEST_PATH/config"
-put -r "$CONFIG_PATH" "$DEST_PATH/"
+put -r "config" "$DEST_PATH/"
 put -r "deploy_routines" "$DEST_PATH"
 EOF
 then
     echo "::notice::SFTP file transfer completed successfully"
+    exit 1
 else
     echo "Error: SFTP file transfer failed"
     exit 1
