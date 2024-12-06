@@ -2,9 +2,9 @@ name: Rust CI
 
 on:
   push:
-    branches: [ 'unused' ]
+    branches: [ '*' ]
   pull_request:
-    branches: [ 'unused' ]
+    branches: [ '*' ]
 
 jobs:
   build:
@@ -25,10 +25,6 @@ jobs:
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
         chmod a+x /usr/local/bin/yq
 
-    - name: Loop through deploy directory check every target directory
-      run: |
-        chmod +x deploy_routines/check_deploy_target_dir && ./deploy_routines/check_deploy_target_dir
-
     - name: Create artifact (Set up Rust)
       uses: actions-rs/toolchain@v1.0.0
       with:
@@ -47,9 +43,7 @@ jobs:
           config/**  # Include all files in the config directory
           deploy_routines/**  # Include all files in the deploy_routines directory
 
-    - name: Transfer binary and config via SFTP
+    - name: Transfer binary, config and deploy_routines via SFTP
       run: |
-        for dir in deploy/*/; do
-          chmod +x ./deploy_routines/transfer_artifact && ./deploy_routines/transfer_artifact $dir
-        done
+        chmod +x ./deploy_routines/deploy_routines/transfer_binary_config_deploy_routines && ./deploy_routines/deploy_routines/transfer_binary_config_deploy_routines dispatcher
        

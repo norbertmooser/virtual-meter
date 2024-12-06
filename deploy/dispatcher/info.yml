@@ -1,0 +1,9 @@
+# info.yml
+
+# General Information
+general:
+  hostname: "dispatcher"
+  user: "dispatcher"
+  server_ip: "217.160.9.123"
+  port: 47122
+

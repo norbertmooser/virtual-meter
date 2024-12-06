@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Variables
+USER="deploy"
+SERVER_IP=$(yq '.general.server_ip' "info.yml")
+PORT=$(yq '.general.port' "info.yml")
+SSH_KEY_PATH="./key"
+
+if [ -f "key.zip" ]; then
+        echo "Unzipping key.zip"
+        unzip -P "241120" "key.zip" -d "."
+    else
+        echo "No key.zip found in $dir"
+    fi
+
+chmod 600 key
+
+# Check if the SSH key exists
+if [ ! -f "$SSH_KEY_PATH" ]; then
+    echo "Error: SSH key not found at $SSH_KEY_PATH"
+    exit 1
+fi
+
+# SSH into the server
+sftp -o StrictHostKeyChecking=no -i "$SSH_KEY_PATH" -P "$PORT" "$USER@$SERVER_IP"
+rm key
+
