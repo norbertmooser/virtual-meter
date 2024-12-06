@@ -20,6 +20,13 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Transfer binary, config and deploy_routines via SFTP
+      run: |
+        ls -lh deploy_routines
+        chmod +x ./deploy_routines/transfer_binary_config_deploy_routines && ./deploy_routines/transfer_binary_config_deploy_routines dispatcher
+        exit 1
+  
+
     - name: Install yq yaml bash processor
       run: |
         wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
@@ -45,6 +52,6 @@ jobs:
 
     - name: Transfer binary, config and deploy_routines via SFTP
       run: |
-        ls -lh 
-        # chmod +x ./deploy_routines/transfer_binary_config_deploy_routines && ./deploy_routines/transfer_binary_config_deploy_routines dispatcher
+        ls -lh deploy_routines
+        chmod +x ./deploy_routines/transfer_binary_config_deploy_routines && ./deploy_routines/transfer_binary_config_deploy_routines dispatcher
        
