@@ -1,4 +1,4 @@
 ./delete_all_workflows
-git add . && git commit -m "Deployment attempt on $(date '+%Y-%m-%d %H:%M:%S')" && git push origin 241206
+git add . && git commit -m "Deployment attempt on $(date '+%Y-%m-%d %H:%M:%S')" && git push origin 241209
 ./watch_current_workflow
 

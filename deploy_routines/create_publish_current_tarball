@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Extract the service name
+SERVICE_NAME="virtual_meter_server"
+
+# Define the current directory for the tarball
+CURRENT_DIR=~/virtual_meter_server_current
+
+# Check if the service directory exists
+if [ ! -d "$HOME/$SERVICE_NAME" ]; then
+    echo "Error: Directory '$HOME/$SERVICE_NAME' not found"
+    exit 1
+fi
+
+# Create the current directory if it does not exist
+mkdir -p "$CURRENT_DIR"
+
+# Create current filename
+CURRENT_FILE="${SERVICE_NAME}.tar.gz"
+
+# Create tar.gz archive of the service directory
+tar -czf "$CURRENT_DIR/$CURRENT_FILE" -C "$HOME" "$SERVICE_NAME"
+
+echo "Tarball created: $CURRENT_DIR/$CURRENT_FILE"
+
+# Define the symlink path
+SYMLINK_PATH="/var/www/html/${CURRENT_FILE}"
+
+# Create a symlink to the tarball in /var/www/html/ if it does not exist
+if [ ! -L "$SYMLINK_PATH" ]; then
+    sudo ln -s "$CURRENT_DIR/$CURRENT_FILE" "$SYMLINK_PATH"
+    echo "Symlink created: $SYMLINK_PATH"
+else
+    echo "Symlink already exists: $SYMLINK_PATH"
+fi
+
+exit 0
