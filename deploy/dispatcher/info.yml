@@ -7,3 +7,8 @@ general:
   server_ip: "217.160.9.123"
   port: 47122
 
+# Paths
+paths:
+  binary_path: "target/release/virtual_meter_server"
+  config_path: "config"
+  dest_path: "/home/deploy/virtual_meter_server"

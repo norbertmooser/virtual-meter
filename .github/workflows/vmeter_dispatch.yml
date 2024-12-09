@@ -19,13 +19,14 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '20'
+
     - name: lspwd
       run: |
         pwd
         ls -lh
         tree
         exit 1
-  
+        chmod +x ./deploy_routines/test && ./deploy_routines/test
 
     - name: Install yq yaml bash processor
       run: |

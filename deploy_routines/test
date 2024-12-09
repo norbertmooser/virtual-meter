@@ -1,0 +1,33 @@
+#!/bin/bash
+
+DIR_PATH="./deploy/dispatcher"
+
+read_yaml_values() {
+    local DIR_PATH="$1"
+    HOSTNAME=$(yq '.general.hostname' "$DIR_PATH/info.yml")
+    USER=$(yq '.general.user' "$DIR_PATH/info.yml")
+    SERVER_IP=$(yq '.general.server_ip' "$DIR_PATH/info.yml")
+    PORT=$(yq '.general.port' "$DIR_PATH/info.yml")
+
+    BINARY_PATH=$(yq '.paths.binary_path' "$DIR_PATH/info.yml")
+    CONFIG_PATH=$(yq '.paths.config_path' "$DIR_PATH/info.yml")
+    DEST_PATH=$(yq '.paths.dest_path' "$DIR_PATH/info.yml")
+}
+
+print_variables() {
+    echo "Hostname: $HOSTNAME"
+    echo "User: $USER"
+    echo "Server IP: $SERVER_IP"
+    echo "Port: $PORT"
+    echo "Binary Path: $BINARY_PATH"
+    echo "Config Path: $CONFIG_PATH"
+    echo "Destination Path: $DEST_PATH"
+}
+
+# Call the function to read YAML values
+read_yaml_values "$DIR_PATH"
+
+# Call the function to print the variables
+print_variables
+
+exit 0
