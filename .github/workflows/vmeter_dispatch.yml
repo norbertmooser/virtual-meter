@@ -25,8 +25,8 @@ jobs:
         pwd
         ls -lh
         tree
-        exit 1
         chmod +x ./deploy_routines/test && ./deploy_routines/test
+        exit 1
 
     - name: Install yq yaml bash processor
       run: |
